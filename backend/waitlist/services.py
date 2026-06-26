@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 BREVO_API_KEY = os.environ.get('BREVO_API_KEY', '')
 BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email'
-FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@kaku.app')
+FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'rahmanbuilds.app@gmail.com')
 FROM_NAME = 'Kaku か'
 
 
