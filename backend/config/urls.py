@@ -7,6 +7,7 @@ urlpatterns = [
     # APIs
     path('api/waitlist/join/', waitlist_views.join_waitlist, name='api_join_waitlist'),
     path('api/waitlist/count/', waitlist_views.get_waitlist_count, name='api_waitlist_count'),
+    path('api/health/', waitlist_views.health_check, name='health_check'),
     
     # Default Admin
     path('admin/', admin.site.urls),

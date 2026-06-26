@@ -28,6 +28,10 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
+# Health check endpoint for UptimeRobot
+def health_check(request):
+    return JsonResponse({"status": "ok"}, status=200)
+
 def send_welcome_email_task(user_id):
     try:
         user = WaitlistUser.objects.get(pk=user_id)
