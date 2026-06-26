@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaku — Master Japanese Writing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0612; --bg2: #0f0a1a; --bg3: #130e20;
+    --purple: #7c3aed; --purple-light: #a855f7;
+    --purple-glow: rgba(124,58,237,0.25); --pink: #ec4899;
+    --text: #f8f4ff; --text-muted: rgba(248,244,255,0.55);
+    --text-dim: rgba(248,244,255,0.3);
+    --border: rgba(255,255,255,0.07); --border-hover: rgba(124,58,237,0.4);
+    --card-bg: rgba(255,255,255,0.03);
+    --radius: 16px; --radius-sm: 10px;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+  body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events:none; z-index:1000; opacity:0.4; }
+
+  .reveal { opacity:0; transform:translateY(32px); transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+  .reveal.in { opacity:1; transform:translateY(0); }
+  .reveal-left { opacity:0; transform:translateX(-32px); transition:opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+  .reveal-left.in { opacity:1; transform:translateX(0); }
+  .reveal-right { opacity:0; transform:translateX(32px); transition:opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+  .reveal-right.in { opacity:1; transform:translateX(0); }
+  .delay-1{transition-delay:0.1s}.delay-2{transition-delay:0.2s}.delay-3{transition-delay:0.3s}.delay-4{transition-delay:0.4s}.delay-5{transition-delay:0.5s}
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:20px 40px; display:flex; align-items:center; justify-content:space-between; transition:background 0.4s,border-color 0.4s; border-bottom:1px solid transparent; }
+  nav.scrolled { background:rgba(10,6,18,0.85); backdrop-filter:blur(20px); border-bottom-color:var(--border); }
+  .nav-logo { display:flex; align-items:center; gap:10px; font-size:20px; font-weight:700; color:var(--text); text-decoration:none; }
+  .nav-logo img { width:32px; height:32px; border-radius:8px; }
+  .nav-logo .jp { font-family:'Noto Sans JP',sans-serif; color:var(--purple-light); font-size:14px; margin-left:2px; }
+  .nav-cta { background:linear-gradient(135deg,var(--purple),#9333ea); color:#fff; border:none; border-radius:100px; padding:10px 24px; font-size:14px; font-weight:600; font-family:'Space Grotesk',sans-serif; cursor:pointer; transition:transform 0.2s,box-shadow 0.2s; text-decoration:none; }
+  .nav-cta:hover { transform:translateY(-1px); box-shadow:0 8px 32px var(--purple-glow); }
+
+  .hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:120px 24px 80px; position:relative; overflow:hidden; }
+  .orb { position:absolute; border-radius:50%; filter:blur(80px); pointer-events:none; }
+  .orb-1 { width:500px; height:500px; background:radial-gradient(circle,rgba(124,58,237,0.3) 0%,transparent 70%); top:-100px; left:50%; transform:translateX(-50%); animation:float1 8s ease-in-out infinite; }
+  .orb-2 { width:300px; height:300px; background:radial-gradient(circle,rgba(236,72,153,0.2) 0%,transparent 70%); bottom:100px; right:-50px; animation:float2 10s ease-in-out 3s infinite; }
+  .orb-3 { width:200px; height:200px; background:radial-gradient(circle,rgba(168,85,247,0.2) 0%,transparent 70%); top:200px; left:-50px; animation:float2 12s ease-in-out 6s infinite; }
+  @keyframes float1 { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-30px)} }
+  @keyframes float2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-20px)} }
+
+  .kanji-bg { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+  .kanji-char { position:absolute; font-family:'Noto Sans JP',sans-serif; color:rgba(124,58,237,0.06); font-size:clamp(80px,12vw,180px); font-weight:700; user-select:none; animation:drift 20s ease-in-out infinite; }
+  .kc1{top:5%;left:5%;animation-duration:18s} .kc2{top:10%;right:8%;animation-duration:22s;animation-delay:4s} .kc3{bottom:15%;left:10%;animation-duration:25s;animation-delay:8s} .kc4{bottom:10%;right:5%;animation-duration:20s;animation-delay:2s}
+  @keyframes drift { 0%,100%{transform:translateY(0) rotate(0deg)} 33%{transform:translateY(-15px) rotate(3deg)} 66%{transform:translateY(10px) rotate(-2deg)} }
+
+  .hero-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(124,58,237,0.15); border:1px solid rgba(124,58,237,0.3); border-radius:100px; padding:6px 16px; font-size:13px; color:var(--purple-light); margin-bottom:32px; animation:fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) both; }
+  .badge-dot { width:6px; height:6px; border-radius:50%; background:var(--purple-light); animation:blink 2s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .hero h1 { font-size:clamp(48px,8vw,96px); font-weight:700; line-height:1.0; letter-spacing:-0.03em; margin-bottom:24px; animation:fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s both; }
+  .hero h1 .grad { background:linear-gradient(135deg,var(--purple-light),var(--pink)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .hero-sub { font-size:clamp(16px,2vw,20px); color:var(--text-muted); max-width:520px; line-height:1.65; margin-bottom:48px; animation:fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s both; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── WAITLIST WIDGET ── */
+  .waitlist-widget { width:100%; max-width:460px; margin:0 auto; animation:fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s both; }
+  .wl-step { display:none; flex-direction:column; align-items:center; gap:12px; }
+  .wl-step.active { display:flex; }
+
+  .wl-input-row { display:flex; gap:10px; width:100%; }
+  .wl-input { flex:1; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:100px; padding:14px 22px; font-size:15px; color:var(--text); font-family:'Space Grotesk',sans-serif; outline:none; transition:border-color 0.2s,background 0.2s; }
+  .wl-input::placeholder { color:var(--text-dim); }
+  .wl-input:focus { border-color:rgba(124,58,237,0.5); background:rgba(124,58,237,0.06); }
+  .wl-input.error { border-color:rgba(236,72,153,0.6) !important; animation:shake 0.4s ease; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
+  .btn-primary { background:linear-gradient(135deg,var(--purple),#9333ea); color:#fff; border:none; border-radius:100px; padding:14px 28px; font-size:15px; font-weight:600; font-family:'Space Grotesk',sans-serif; cursor:pointer; white-space:nowrap; transition:transform 0.2s,box-shadow 0.2s,opacity 0.2s; box-shadow:0 4px 24px var(--purple-glow); }
+  .btn-primary:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 40px rgba(124,58,237,0.4); }
+  .btn-primary:disabled { opacity:0.6; cursor:not-allowed; }
+
+
+
+  /* success */
+  .wl-success { text-align:center; }
+  .success-icon { width:64px; height:64px; border-radius:50%; background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:28px; animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both; }
+  @keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+  .success-title { font-size:20px; font-weight:600; margin-bottom:8px; }
+  .success-sub { font-size:14px; color:var(--text-muted); line-height:1.6; }
+
+  .wl-error-msg { font-size:13px; color:#f87171; min-height:18px; text-align:center; }
+
+  .waitlist-meta { font-size:13px; color:var(--text-dim); margin-top:14px; animation:fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.4s both; }
+  .waitlist-meta strong { color:var(--text-muted); }
+  #hero-count { transition:all 0.4s ease; }
+
+  /* ── SCREENSHOT STRIP ── */
+  .showcase-section { padding:40px 0 100px; overflow:hidden; }
+  .screenshot-strip { display:flex; gap:16px; padding:20px 0; animation:scrollStrip 30s linear infinite; width:max-content; }
+  .screenshot-strip:hover { animation-play-state:paused; }
+  @keyframes scrollStrip { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  .strip-screen { width:200px; border-radius:20px; overflow:hidden; border:1px solid var(--border); flex-shrink:0; transition:transform 0.3s,border-color 0.3s; }
+  .strip-screen:hover { transform:scale(1.03) translateY(-4px); border-color:rgba(124,58,237,0.3); }
+  .strip-screen img { width:100%; display:block; }
+
+  /* ── SECTIONS ── */
+  section { padding:100px 24px; max-width:1100px; margin:0 auto; }
+  .section-label { font-size:12px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--purple-light); margin-bottom:16px; }
+  .section-h { font-size:clamp(32px,5vw,56px); font-weight:700; letter-spacing:-0.02em; line-height:1.1; margin-bottom:16px; }
+  .section-sub { font-size:18px; color:var(--text-muted); line-height:1.6; max-width:560px; }
+  .divider { height:1px; background:linear-gradient(90deg,transparent,var(--border),transparent); margin:0 40px; }
+
+  /* ── HOW IT WORKS ── */
+  .steps-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px 80px; margin-top:70px; align-items:center; }
+  .steps-list { display:flex; flex-direction:column; gap:8px; }
+  .step-item { display:flex; gap:20px; padding:22px; border-radius:var(--radius); border:1px solid transparent; cursor:pointer; transition:background 0.3s,border-color 0.3s; }
+  .step-item.active,.step-item:hover { background:rgba(124,58,237,0.08); border-color:rgba(124,58,237,0.2); }
+  .step-num { width:36px; height:36px; border-radius:50%; background:rgba(124,58,237,0.15); border:1px solid rgba(124,58,237,0.3); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:var(--purple-light); flex-shrink:0; }
+  .step-item.active .step-num { background:var(--purple); border-color:var(--purple); color:#fff; }
+  .step-content h3 { font-size:17px; font-weight:600; margin-bottom:6px; }
+  .step-content p { font-size:14px; color:var(--text-muted); line-height:1.55; }
+  .steps-preview { position:relative; display:flex; align-items:center; justify-content:center; }
+  .phone-frame { width:280px; border-radius:40px; overflow:hidden; border:2px solid rgba(255,255,255,0.1); box-shadow:0 40px 100px rgba(0,0,0,0.6),0 0 60px var(--purple-glow); position:relative; z-index:2; }
+  .phone-frame img { width:100%; display:block; transition:opacity 0.4s ease; }
+  .phone-glow { position:absolute; width:300px; height:300px; border-radius:50%; background:radial-gradient(circle,rgba(124,58,237,0.2) 0%,transparent 70%); filter:blur(40px); z-index:1; }
+
+  /* ── BENTO ── */
+  .bento { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-top:56px; }
+  .bento-card { background:var(--card-bg); border:1px solid var(--border); border-radius:20px; padding:28px; transition:border-color 0.3s,background 0.3s,transform 0.3s; position:relative; overflow:hidden; }
+  .bento-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(124,58,237,0.05) 0%,transparent 60%); opacity:0; transition:opacity 0.3s; }
+  .bento-card:hover { border-color:rgba(124,58,237,0.25); background:rgba(124,58,237,0.04); transform:translateY(-3px); }
+  .bento-card:hover::before { opacity:1; }
+  .bento-wide { grid-column:span 2; }
+  .bento-card h3 { font-size:18px; font-weight:600; margin-bottom:8px; }
+  .bento-card p { font-size:14px; color:var(--text-muted); line-height:1.6; }
+  .bento-jp { font-family:'Noto Sans JP',sans-serif; font-size:56px; color:rgba(124,58,237,0.15); font-weight:700; position:absolute; right:20px; bottom:10px; line-height:1; pointer-events:none; }
+  .bento-stat { text-align:center; padding:36px 28px; }
+  .bento-stat .stat-num { font-size:52px; font-weight:700; letter-spacing:-0.03em; background:linear-gradient(135deg,var(--purple-light),var(--pink)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1; margin-bottom:8px; }
+  .bento-stat .stat-label { font-size:14px; color:var(--text-muted); }
+
+  /* ── 3D SVG ICONS ── */
+  .icon-3d { width:52px; height:52px; margin-bottom:18px; }
+
+  /* ── WHO ITS FOR ── */
+  .for-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; margin-top:56px; }
+
+  /* ── FAQ ── */
+  .faq-list { margin-top:56px; display:flex; flex-direction:column; gap:2px; }
+  .faq-item { border:1px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; transition:border-color 0.2s; }
+  .faq-item:hover { border-color:rgba(124,58,237,0.25); }
+  .faq-q { width:100%; background:none; border:none; padding:22px 24px; display:flex; align-items:center; justify-content:space-between; font-size:16px; font-weight:500; color:var(--text); font-family:'Space Grotesk',sans-serif; cursor:pointer; text-align:left; gap:16px; }
+  .faq-chevron { width:24px; height:24px; border-radius:50%; background:rgba(124,58,237,0.15); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:transform 0.3s,background 0.2s; color:var(--purple-light); font-size:14px; }
+  .faq-item.open .faq-chevron { transform:rotate(45deg); background:rgba(124,58,237,0.3); }
+  .faq-a { max-height:0; overflow:hidden; transition:max-height 0.4s cubic-bezier(0.16,1,0.3,1); }
+  .faq-item.open .faq-a { max-height:200px; }
+  .faq-a-inner { padding:0 24px 22px; font-size:15px; color:var(--text-muted); line-height:1.65; }
+
+  /* ── FINAL CTA ── */
+  .final-cta { padding:120px 24px; text-align:center; position:relative; overflow:hidden; }
+  .final-cta-inner { max-width:700px; margin:0 auto; position:relative; z-index:2; }
+  .final-bg { position:absolute; inset:0; background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(124,58,237,0.12) 0%,transparent 70%); pointer-events:none; }
+  .final-cta h2 { font-size:clamp(36px,6vw,72px); font-weight:700; letter-spacing:-0.03em; line-height:1.1; margin-bottom:20px; }
+  .final-cta .grad { background:linear-gradient(135deg,var(--purple-light),var(--pink)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .final-cta > .final-cta-inner > p { font-size:18px; color:var(--text-muted); margin-bottom:40px; line-height:1.6; }
+
+  footer { border-top:1px solid var(--border); padding:40px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px; }
+  .footer-logo { display:flex; align-items:center; gap:8px; font-size:16px; font-weight:600; color:var(--text); text-decoration:none; }
+  .footer-logo img { width:24px; height:24px; border-radius:6px; }
+  .footer-links { display:flex; gap:28px; flex-wrap:wrap; }
+  .footer-links a { font-size:14px; color:var(--text-muted); text-decoration:none; transition:color 0.2s; }
+  .footer-links a:hover { color:var(--text); }
+  .footer-copy { font-size:13px; color:var(--text-dim); }
+
+  @media(max-width:768px) {
+    nav{padding:16px 20px}
+    .steps-grid{grid-template-columns:1fr;gap:40px}
+    .steps-preview{order:-1}
+    .phone-frame{width:220px}
+    .bento{grid-template-columns:1fr}
+    .bento-wide{grid-column:span 1}
+    .wl-input-row{flex-direction:column}
+    .wl-input,.btn-primary{border-radius:14px}
+    footer{flex-direction:column;align-items:flex-start}
+    section{padding:70px 20px}
+  }
+  @media(prefers-reduced-motion:reduce) {
+    .reveal,.reveal-left,.reveal-right{opacity:1;transform:none;transition:none}
+    .orb,.kanji-char,.screenshot-strip{animation:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- CONFIG: Replace these with your actual keys -->
+<script>
+  // ════════════════════════════════════════════════
+  // KAKU WAITLIST CONFIG — fill these after setup
+  // ════════════════════════════════════════════════
+  const CONFIG = {
+    API_URL: 'http://localhost:8000', // Update this to your deployed backend URL
+  };
+  // ════════════════════════════════════════════════
+</script>
+
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <img src="icon.png" alt="Kaku">
+    <span>Kaku</span>
+    <span class="jp">かく</span>
+  </a>
+  <a href="#bottom-waitlist" class="nav-cta">Join waitlist</a>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="kanji-bg">
+    <span class="kanji-char kc1">あ</span>
+    <span class="kanji-char kc2">空</span>
+    <span class="kanji-char kc3">ア</span>
+    <span class="kanji-char kc4">書</span>
+  </div>
+
+  <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;">
+    <div class="hero-badge"><span class="badge-dot"></span>Early access — limited spots</div>
+
+    <h1>Master<br><span class="grad">Japanese writing</span><br>from scratch</h1>
+    <p class="hero-sub">Learn Hiragana, Katakana and Kanji with animated stroke guides, AI accuracy feedback, and a system designed around how memory actually works.</p>
+
+    <!-- WAITLIST WIDGET -->
+    <div class="waitlist-widget" id="hero-widget">
+      <!-- Step 1: Email -->
+      <div class="wl-step active" id="hero-s1">
+        <div class="wl-input-row">
+          <input type="email" id="hero-email" class="wl-input" placeholder="Your email address">
+          <input type="text" id="hero-honeypot" name="website" style="display:none" tabindex="-1" autocomplete="off">
+          <button class="btn-primary" id="hero-s1-btn" onclick="joinWaitlist('hero')">Get early access</button>
+        </div>
+        <div class="wl-error-msg" id="hero-s1-err"></div>
+      </div>
+
+      <!-- Step 3: Success -->
+      <div class="wl-step" id="hero-s3">
+        <div class="wl-success">
+          <div class="success-icon">✓</div>
+          <div class="success-title">You're on the list! 🎉</div>
+          <div class="success-sub">Check your inbox for a welcome email from Kaku.<br>We'll notify you the moment we launch.</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="waitlist-meta"><strong id="hero-count">...</strong> people already waiting · Free to use</p>
+  </div>
+</div>
+
+<!-- ── SCREENSHOT STRIP ── -->
+<div class="showcase-section">
+  <div style="overflow:hidden;mask-image:linear-gradient(90deg,transparent,black 10%,black 90%,transparent);">
+    <div class="screenshot-strip">
+      <div class="strip-screen"><img src="01.png" alt="Home"></div>
+      <div class="strip-screen"><img src="02.png" alt="Stroke guide"></div>
+      <div class="strip-screen"><img src="03.png" alt="AI feedback"></div>
+      <div class="strip-screen"><img src="04.png" alt="Alphabets"></div>
+      <div class="strip-screen"><img src="05.png" alt="Progress"></div>
+      <div class="strip-screen"><img src="01.png" alt="Home"></div>
+      <div class="strip-screen"><img src="02.png" alt="Stroke guide"></div>
+      <div class="strip-screen"><img src="03.png" alt="AI feedback"></div>
+      <div class="strip-screen"><img src="04.png" alt="Alphabets"></div>
+      <div class="strip-screen"><img src="05.png" alt="Progress"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HOW IT WORKS ── -->
+<section>
+  <p class="section-label reveal">How it works</p>
+  <h2 class="section-h reveal delay-1">Three moves.<br>One new script.</h2>
+  <p class="section-sub reveal delay-2">Kaku breaks Japanese writing into the smallest possible steps, then builds it back up into lasting muscle memory.</p>
+  <div class="steps-grid">
+    <div class="steps-list reveal-left delay-1">
+      <div class="step-item active" onclick="switchStep(this,'02.png')">
+        <div class="step-num">1</div>
+        <div class="step-content"><h3>Watch it drawn</h3><p>See every character animated stroke-by-stroke at 0.5×, 1×, or 2× speed. Understand the shape before you practice it.</p></div>
+      </div>
+      <div class="step-item" onclick="switchStep(this,'03.png')">
+        <div class="step-num">2</div>
+        <div class="step-content"><h3>Practice with AI grading</h3><p>Draw the character yourself. Our AI scores your attempt instantly — a percentage match and XP, not just pass/fail.</p></div>
+      </div>
+      <div class="step-item" onclick="switchStep(this,'05.png')">
+        <div class="step-num">3</div>
+        <div class="step-content"><h3>Track mastery over time</h3><p>Your XP, streaks, and per-script progress always visible. See exactly where you stand across all three scripts.</p></div>
+      </div>
+    </div>
+    <div class="steps-preview reveal-right delay-2">
+      <div class="phone-glow"></div>
+      <div class="phone-frame"><img src="02.png" id="step-screen" alt="App screen"></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── FEATURES BENTO ── -->
+<section>
+  <p class="section-label reveal">What you get</p>
+  <h2 class="section-h reveal delay-1">Everything you need,<br>nothing you don't.</h2>
+  <div class="bento">
+    <div class="bento-card bento-wide reveal delay-1">
+      <!-- 3D Stroke SVG -->
+      <svg class="icon-3d" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="52" y2="52" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#a855f7"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+          <filter id="shadow1"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#7c3aed" flood-opacity="0.5"/></filter>
+        </defs>
+        <rect width="52" height="52" rx="14" fill="url(#g1)" opacity="0.15"/>
+        <g filter="url(#shadow1)">
+          <path d="M12 20 Q20 10 32 18 Q40 24 38 34 Q36 42 26 40 Q16 38 14 30 Q12 24 12 20Z" stroke="url(#g1)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <circle cx="38" cy="34" r="3" fill="#ec4899"/>
+          <line x1="38" y1="34" x2="44" y2="42" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
+      </svg>
+      <h3>Animated stroke guides</h3>
+      <p>Watch the exact stroke order for every character in Hiragana, Katakana, and Kanji N5 — animated in real time. Stroke order isn't a detail, it's what makes handwriting readable.</p>
+      <span class="bento-jp">あ</span>
+    </div>
+
+    <div class="bento-card reveal delay-2">
+      <svg class="icon-3d" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g2" x1="0" y1="0" x2="52" y2="52" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#22c55e"/>
+            <stop offset="100%" stop-color="#16a34a"/>
+          </linearGradient>
+          <filter id="shadow2"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#22c55e" flood-opacity="0.4"/></filter>
+        </defs>
+        <rect width="52" height="52" rx="14" fill="url(#g2)" opacity="0.12"/>
+        <g filter="url(#shadow2)">
+          <circle cx="26" cy="26" r="12" stroke="url(#g2)" stroke-width="2.5" fill="none"/>
+          <path d="M20 26 L24 30 L32 22" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M26 14 L26 10M32 16 L35 13M38 22 L42 22" stroke="url(#g2)" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+        </g>
+      </svg>
+      <h3>AI accuracy scoring</h3>
+      <p>Draw characters and get a percentage match score with XP rewards. Not just right or wrong — feedback that's actually useful.</p>
+    </div>
+
+    <div class="bento-card bento-stat reveal delay-1">
+      <div class="stat-num">195+</div>
+      <div class="stat-label">characters to master<br>across 3 scripts</div>
+    </div>
+
+    <div class="bento-card bento-stat reveal delay-2">
+      <div class="stat-num">0→N5</div>
+      <div class="stat-label">Kanji level in<br>one structured path</div>
+    </div>
+
+    <div class="bento-card bento-wide reveal delay-3">
+      <svg class="icon-3d" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g3" x1="0" y1="0" x2="52" y2="52" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#f97316"/>
+            <stop offset="100%" stop-color="#dc2626"/>
+          </linearGradient>
+          <filter id="shadow3"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#f97316" flood-opacity="0.5"/></filter>
+        </defs>
+        <rect width="52" height="52" rx="14" fill="url(#g3)" opacity="0.12"/>
+        <g filter="url(#shadow3)">
+          <path d="M26 8 C26 8 20 16 20 22 C20 25.3 22.7 28 26 28 C29.3 28 32 25.3 32 22 C32 16 26 8 26 8Z" fill="url(#g3)" opacity="0.9"/>
+          <path d="M22 20 C22 20 19 24 20 28 C21 32 24 34 26 34" stroke="#fbbf24" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+          <path d="M18 30 L34 30 L32 44 L20 44 Z" fill="url(#g3)" opacity="0.6"/>
+          <line x1="22" y1="35" x2="22" y2="41" stroke="#fed7aa" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="26" y1="33" x2="26" y2="42" stroke="#fed7aa" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="30" y1="35" x2="30" y2="41" stroke="#fed7aa" stroke-width="1.5" stroke-linecap="round"/>
+        </g>
+      </svg>
+      <h3>Streak system & XP levels</h3>
+      <p>Daily streaks, XP milestones, and level badges keep the habit alive. The progress bar moves every session — small wins that compound into fluency.</p>
+      <span class="bento-jp">空</span>
+    </div>
+
+    <div class="bento-card reveal delay-1">
+      <svg class="icon-3d" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g4" x1="0" y1="0" x2="52" y2="52" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#38bdf8"/>
+            <stop offset="100%" stop-color="#0ea5e9"/>
+          </linearGradient>
+          <filter id="shadow4"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#38bdf8" flood-opacity="0.4"/></filter>
+        </defs>
+        <rect width="52" height="52" rx="14" fill="url(#g4)" opacity="0.1"/>
+        <g filter="url(#shadow4)">
+          <rect x="10" y="12" width="32" height="28" rx="4" stroke="url(#g4)" stroke-width="2" fill="none"/>
+          <line x1="10" y1="20" x2="42" y2="20" stroke="url(#g4)" stroke-width="1.5"/>
+          <rect x="15" y="24" width="8" height="8" rx="2" fill="url(#g4)" opacity="0.7"/>
+          <rect x="26" y="24" width="8" height="8" rx="2" fill="url(#g4)" opacity="0.4"/>
+          <rect x="15" y="34" width="8" height="4" rx="2" fill="url(#g4)" opacity="0.4"/>
+          <rect x="26" y="34" width="8" height="4" rx="2" fill="url(#g4)" opacity="0.7"/>
+        </g>
+      </svg>
+      <h3>Full alphabet reference</h3>
+      <p>Browse every character grouped by row. Search by romaji, character, or meaning. A complete reference built into the learning tool.</p>
+    </div>
+
+    <div class="bento-card reveal delay-2">
+      <svg class="icon-3d" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g5" x1="0" y1="0" x2="52" y2="52" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#f472b6"/>
+            <stop offset="100%" stop-color="#a855f7"/>
+          </linearGradient>
+          <filter id="shadow5"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#f472b6" flood-opacity="0.4"/></filter>
+        </defs>
+        <rect width="52" height="52" rx="14" fill="url(#g5)" opacity="0.1"/>
+        <g filter="url(#shadow5)">
+          <circle cx="26" cy="20" r="8" stroke="url(#g5)" stroke-width="2.5" fill="none"/>
+          <path d="M26 12 L26 8" stroke="url(#g5)" stroke-width="2" stroke-linecap="round"/>
+          <path d="M20 14.5 L17 11.5" stroke="url(#g5)" stroke-width="2" stroke-linecap="round"/>
+          <path d="M32 14.5 L35 11.5" stroke="url(#g5)" stroke-width="2" stroke-linecap="round"/>
+          <path d="M14 36 C14 30 18 28 26 28 C34 28 38 30 38 36" stroke="url(#g5)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <line x1="22" y1="20" x2="30" y2="20" stroke="#f472b6" stroke-width="2" stroke-linecap="round"/>
+          <line x1="26" y1="16" x2="26" y2="24" stroke="#f472b6" stroke-width="2" stroke-linecap="round"/>
+        </g>
+      </svg>
+      <h3>Memory challenge mode</h3>
+      <p>Toggle off the ghost guide and draw from pure memory. The real test of whether a character has truly stuck.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── WHO IT'S FOR ── -->
+<section>
+  <p class="section-label reveal">Who it's for</p>
+  <h2 class="section-h reveal delay-1">Built for learners<br>who mean it.</h2>
+  <p class="section-sub reveal delay-2">Whether you're watching anime, planning a trip, or starting a real study path — Kaku meets you where you are.</p>
+  <div class="for-grid">
+    <div class="bento-card reveal delay-1">
+      <svg class="icon-3d" viewBox="0 0 52 52" fill="none"><defs><linearGradient id="ga" x1="0" y1="0" x2="52" y2="52" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#f472b6"/><stop offset="100%" stop-color="#e879f9"/></linearGradient><filter id="sha"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#f472b6" flood-opacity="0.5"/></filter></defs><rect width="52" height="52" rx="14" fill="url(#ga)" opacity="0.12"/><g filter="url(#sha)"><rect x="10" y="14" width="32" height="20" rx="3" stroke="url(#ga)" stroke-width="2" fill="none"/><path d="M22 34 L18 40 M30 34 L34 40 M18 40 L34 40" stroke="url(#ga)" stroke-width="2" stroke-linecap="round"/><circle cx="26" cy="24" r="5" fill="url(#ga)" opacity="0.8"/><path d="M24 24 L28 22 L28 26 Z" fill="white"/></g></svg>
+      <h3>Anime fans</h3>
+      <p>Read onscreen text without subtitles. Start with Hiragana in a weekend, surprise yourself.</p>
+    </div>
+    <div class="bento-card reveal delay-2">
+      <svg class="icon-3d" viewBox="0 0 52 52" fill="none"><defs><linearGradient id="gb" x1="0" y1="0" x2="52" y2="52" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#34d399"/><stop offset="100%" stop-color="#059669"/></linearGradient><filter id="shb"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#34d399" flood-opacity="0.5"/></filter></defs><rect width="52" height="52" rx="14" fill="url(#gb)" opacity="0.12"/><g filter="url(#shb)"><path d="M26 10 L30 20 L42 20 L33 27 L36 38 L26 31 L16 38 L19 27 L10 20 L22 20 Z" fill="url(#gb)" opacity="0.85"/><circle cx="26" cy="26" r="4" fill="white" opacity="0.3"/></g></svg>
+      <h3>Travelers</h3>
+      <p>Read menus, signs, and directions. Katakana alone opens up most borrowed words in Japan.</p>
+    </div>
+    <div class="bento-card reveal delay-3">
+      <svg class="icon-3d" viewBox="0 0 52 52" fill="none"><defs><linearGradient id="gc" x1="0" y1="0" x2="52" y2="52" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#6366f1"/></linearGradient><filter id="shc"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#818cf8" flood-opacity="0.5"/></filter></defs><rect width="52" height="52" rx="14" fill="url(#gc)" opacity="0.12"/><g filter="url(#shc)"><rect x="12" y="10" width="28" height="36" rx="3" stroke="url(#gc)" stroke-width="2" fill="none"/><line x1="18" y1="18" x2="34" y2="18" stroke="url(#gc)" stroke-width="1.5" stroke-linecap="round"/><line x1="18" y1="24" x2="34" y2="24" stroke="url(#gc)" stroke-width="1.5" stroke-linecap="round"/><line x1="18" y1="30" x2="28" y2="30" stroke="url(#gc)" stroke-width="1.5" stroke-linecap="round"/><circle cx="33" cy="36" r="5" fill="url(#gc)" opacity="0.9"/><path d="M31 36 L32.5 37.5 L35 34.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+      <h3>Serious students</h3>
+      <p>Work through JLPT N5 Kanji systematically. Track mastery per character, not just per lesson.</p>
+    </div>
+    <div class="bento-card reveal delay-4">
+      <svg class="icon-3d" viewBox="0 0 52 52" fill="none"><defs><linearGradient id="gd" x1="0" y1="0" x2="52" y2="52" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#fb923c"/><stop offset="100%" stop-color="#ea580c"/></linearGradient><filter id="shd"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#fb923c" flood-opacity="0.5"/></filter></defs><rect width="52" height="52" rx="14" fill="url(#gd)" opacity="0.12"/><g filter="url(#shd)"><rect x="10" y="18" width="12" height="18" rx="2" fill="url(#gd)" opacity="0.7"/><rect x="24" y="12" width="12" height="24" rx="2" fill="url(#gd)" opacity="0.9"/><path d="M14 16 L16 10 L18 16" stroke="url(#gd)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="38" cy="22" r="6" stroke="url(#gd)" stroke-width="2" fill="none"/><path d="M36 22 L37.5 23.5 L40 20" stroke="#fb923c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+      <h3>Gamers</h3>
+      <p>Unlock Japanese games before localization. The streak system makes daily practice addictive.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── FAQ ── -->
+<section>
+  <p class="section-label reveal">Questions</p>
+  <h2 class="section-h reveal delay-1">Answers to what<br>you're already thinking.</h2>
+  <div class="faq-list reveal delay-2">
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Do I need to know any Japanese before starting?<span class="faq-chevron">+</span></button><div class="faq-a"><div class="faq-a-inner">Not at all. Kaku starts from zero — the first lesson assumes you've never seen a Japanese character. Hiragana and Katakana are phonetic, so you can go from nothing to reading them in days.</div></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">How is this different from Duolingo?<span class="faq-chevron">+</span></button><div class="faq-a"><div class="faq-a-inner">Kaku is focused entirely on the writing system — stroke order, character recognition, and muscle memory. Most general apps teach vocabulary with flashcards. Kaku teaches you to actually draw the characters correctly, which builds a much deeper connection to the language.</div></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Is it free to use?<span class="faq-chevron">+</span></button><div class="faq-a"><div class="faq-a-inner">Yes — Kaku is free to download and use. Early access waitlist members get priority when the app goes live, plus any launch perks announced closer to release.</div></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Which scripts does Kaku cover?<span class="faq-chevron">+</span></button><div class="faq-a"><div class="faq-a-inner">Kaku covers all three Japanese writing systems: Hiragana (46), Katakana (46), and Kanji at JLPT N5 level (103 essential characters) — 195+ total.</div></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">When does the app launch?<span class="faq-chevron">+</span></button><div class="faq-a"><div class="faq-a-inner">We're targeting Android launch soon. Join the waitlist and you'll be the first to know — and the first to get access.</div></div></div>
+  </div>
+</section>
+
+<!-- ── FINAL CTA ── -->
+<div class="final-cta" id="bottom-waitlist">
+  <div class="final-bg"></div>
+  <div class="final-cta-inner">
+    <p class="section-label reveal">Ready?</p>
+    <h2 class="reveal delay-1">Start reading<br><span class="grad">Japanese</span><br>this week.</h2>
+    <p class="reveal delay-2">Hiragana in a weekend. That's not a promise — it's what the structure makes possible.</p>
+
+    <!-- BOTTOM WAITLIST WIDGET -->
+    <div class="waitlist-widget" id="bottom-widget" style="margin-bottom:16px;">
+      <div class="wl-step active" id="bottom-s1">
+        <div class="wl-input-row" style="justify-content:center;">
+          <input type="email" id="bottom-email" class="wl-input" placeholder="your@email.com" autocomplete="email">
+          <input type="text" id="bottom-honeypot" name="website" style="display:none" tabindex="-1" autocomplete="off">
+          <button class="btn-primary" id="bottom-s1-btn" onclick="joinWaitlist('bottom')">Get early access</button>
+        </div>
+        <div class="wl-error-msg" id="bottom-s1-err"></div>
+      </div>
+      <div class="wl-step" id="bottom-s3">
+        <div class="wl-success">
+          <div class="success-icon">✓</div>
+          <div class="success-title">You're on the list! 🎉</div>
+          <div class="success-sub">Check your inbox for a welcome email from Kaku.<br>We'll notify you the moment we launch.</div>
+        </div>
+      </div>
+    </div>
+    <p class="waitlist-meta reveal delay-4"><strong id="bottom-count">...</strong> people waiting · Android · Free</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+<footer>
+  <a href="#" class="footer-logo"><img src="icon.png" alt="">Kaku <span style="font-family:'Noto Sans JP',sans-serif;color:var(--purple-light);font-size:12px;margin-left:2px;">かく</span></a>
+  <div class="footer-links">
+    <a href="privacy.html">Privacy policy</a>
+    <a href="terms.html">Terms of service</a>
+    <a href="support.html">Support</a>
+  </div>
+  <p class="footer-copy">© 2025 Kaku. All rights reserved.</p>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════
+// WAITLIST ENGINE
+// ══════════════════════════════════════════════════
+
+// ── Fetch real count from Supabase
+async function fetchCount() {
+  try {
+    const res = await fetch(`${CONFIG.API_URL}/api/waitlist/count/`);
+    const data = await res.json();
+    const total = data.count || 0;
+    const display = total > 0 ? total.toLocaleString() : '—';
+    document.getElementById('hero-count').textContent = display;
+    document.getElementById('bottom-count').textContent = display;
+  } catch(e) {
+    document.getElementById('hero-count').textContent = '—';
+    document.getElementById('bottom-count').textContent = '—';
+  }
+}
+fetchCount();
+
+// ── Step navigation helper
+function showStep(prefix, n) {
+  for(let i = 1; i <= 3; i++) {
+    const el = document.getElementById(`${prefix}-s${i}`);
+    if(el) { el.classList.remove('active'); }
+  }
+  const target = document.getElementById(`${prefix}-s${n}`);
+  if(target) target.classList.add('active');
+}
+
+// ── Join Waitlist (direct Supabase insert, no OTP)
+async function joinWaitlist(prefix) {
+  const input = document.getElementById(`${prefix}-email`);
+  const honeypot = document.getElementById(`${prefix}-honeypot`) ? document.getElementById(`${prefix}-honeypot`).value : '';
+  const btn   = document.getElementById(`${prefix}-s1-btn`);
+  const err   = document.getElementById(`${prefix}-s1-err`);
+  const email = input.value.trim().toLowerCase();
+
+  // Validate
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    input.classList.add('error');
+    err.textContent = 'Please enter a valid email address.';
+    setTimeout(() => { input.classList.remove('error'); err.textContent = ''; }, 2000);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Joining...';
+  err.textContent = '';
+
+  const params = new URLSearchParams(window.location.search);
+  const source = params.get('source') || params.get('ref') || '';
+
+  try {
+    const res = await fetch(`${CONFIG.API_URL}/api/waitlist/join/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: email, source: source, honeypot: honeypot })
+    });
+
+    if(!res.ok && res.status !== 409) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.message || 'Something went wrong. Please try again.');
+    }
+
+    showStep(prefix, 3);
+    fetchCount();
+  } catch(e) {
+    err.textContent = e.message;
+    btn.disabled = false;
+    btn.textContent = 'Get early access';
+  }
+}
+
+// ── Scroll reveals
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('in'); observer.unobserve(e.target); }});
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el => observer.observe(el));
+
+// ── Navbar
+const nav = document.getElementById('navbar');
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40));
+
+// ── Step switcher
+function switchStep(el, screen) {
+  document.querySelectorAll('.step-item').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  const img = document.getElementById('step-screen');
+  img.style.opacity = '0';
+  setTimeout(() => { img.src = screen; img.style.opacity = '1'; }, 200);
+}
+
+// ── FAQ
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if(!isOpen) item.classList.add('open');
+}
+
+// ── Enter key on email
+document.querySelectorAll('input[type=email]').forEach(inp => {
+  inp.addEventListener('keydown', e => { if(e.key==='Enter') inp.nextElementSibling?.click(); });
+});
+</script>
+</body>
+</html>

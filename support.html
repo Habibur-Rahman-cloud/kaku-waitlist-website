@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support — Kaku</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#0a0612;--bg2:#0f0a1a;--purple:#7c3aed;--purple-light:#a855f7;--pink:#ec4899;--text:#f8f4ff;--text-muted:rgba(248,244,255,0.6);--text-dim:rgba(248,244,255,0.35);--border:rgba(255,255,255,0.07);--card:rgba(255,255,255,0.03);--green:#22c55e}
+  body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;-webkit-font-smoothing:antialiased}
+  nav{padding:20px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+  .nav-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;color:var(--text);text-decoration:none}
+  .nav-logo img{width:28px;height:28px;border-radius:7px}
+  .nav-logo .jp{font-family:'Noto Sans JP',sans-serif;color:var(--purple-light);font-size:13px}
+  .back-link{font-size:14px;color:var(--text-muted);text-decoration:none;transition:color 0.2s}
+  .back-link:hover{color:var(--text)}
+  .page-wrap{max-width:760px;margin:0 auto;padding:60px 24px 100px}
+  .page-label{font-size:12px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-light);margin-bottom:14px}
+  h1{font-size:40px;font-weight:700;letter-spacing:-0.02em;line-height:1.1;margin-bottom:14px}
+  .hero-sub{font-size:17px;color:var(--text-muted);line-height:1.65;margin-bottom:56px;max-width:520px}
+
+  /* CONTACT CARDS */
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:56px}
+  .contact-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px;text-decoration:none;transition:border-color 0.3s,background 0.3s,transform 0.3s;display:block}
+  .contact-card:hover{border-color:rgba(124,58,237,0.3);background:rgba(124,58,237,0.04);transform:translateY(-2px)}
+  .cc-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:22px}
+  .cc-purple{background:rgba(124,58,237,0.15)}
+  .cc-pink{background:rgba(236,72,153,0.12)}
+  .cc-green{background:rgba(34,197,94,0.12)}
+  .cc-blue{background:rgba(56,189,248,0.12)}
+  .contact-card h3{font-size:16px;font-weight:600;margin-bottom:6px}
+  .contact-card p{font-size:13px;color:var(--text-muted);line-height:1.55;margin-bottom:10px}
+  .cc-link{font-size:13px;color:var(--purple-light);font-weight:500}
+
+  /* FAQ */
+  .faq-section h2{font-size:26px;font-weight:700;margin-bottom:6px}
+  .faq-section .sub{font-size:15px;color:var(--text-muted);margin-bottom:28px}
+  .faq-list{display:flex;flex-direction:column;gap:2px;margin-bottom:56px}
+  .faq-item{border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color 0.2s}
+  .faq-item:hover{border-color:rgba(124,58,237,0.25)}
+  .faq-q{width:100%;background:none;border:none;padding:20px 22px;display:flex;align-items:center;justify-content:space-between;font-size:15px;font-weight:500;color:var(--text);font-family:'Space Grotesk',sans-serif;cursor:pointer;text-align:left;gap:16px}
+  .faq-chevron{width:22px;height:22px;border-radius:50%;background:rgba(124,58,237,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform 0.3s,background 0.2s;color:var(--purple-light);font-size:13px}
+  .faq-item.open .faq-chevron{transform:rotate(45deg);background:rgba(124,58,237,0.25)}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height 0.4s cubic-bezier(0.16,1,0.3,1)}
+  .faq-item.open .faq-a{max-height:180px}
+  .faq-a-inner{padding:0 22px 20px;font-size:14px;color:var(--text-muted);line-height:1.7}
+  .faq-a-inner a{color:var(--purple-light)}
+
+  /* CONTACT FORM */
+  .form-section{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px}
+  .form-section h2{font-size:22px;font-weight:700;margin-bottom:6px}
+  .form-section .sub{font-size:14px;color:var(--text-muted);margin-bottom:28px}
+  .field-label{display:block;font-size:13px;font-weight:500;color:var(--text-muted);margin-bottom:7px}
+  .field-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--text);font-family:'Space Grotesk',sans-serif;outline:none;margin-bottom:16px;transition:border-color 0.2s}
+  .field-input:focus{border-color:rgba(124,58,237,0.45)}
+  .field-input::placeholder{color:var(--text-dim)}
+  select.field-input option{background:#0f0a1a;color:var(--text)}
+  textarea.field-input{resize:vertical;min-height:120px;line-height:1.6}
+  .submit-btn{background:linear-gradient(135deg,var(--purple),#9333ea);color:#fff;border:none;border-radius:10px;padding:13px 32px;font-size:15px;font-weight:600;font-family:'Space Grotesk',sans-serif;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s}
+  .submit-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 24px rgba(124,58,237,0.35)}
+  .submit-btn:disabled{opacity:0.5;cursor:not-allowed}
+  .form-success{display:none;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:20px 24px;text-align:center}
+  .form-success .success-icon{font-size:32px;margin-bottom:8px}
+  .form-success h3{font-size:17px;font-weight:600;margin-bottom:6px}
+  .form-success p{font-size:14px;color:var(--text-muted)}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+  footer-bar{display:block;border-top:1px solid var(--border);padding:32px 40px;text-align:center;font-size:13px;color:var(--text-dim)}
+  footer-bar a{color:var(--text-dim);text-decoration:none;margin:0 12px}
+  footer-bar a:hover{color:var(--text-muted)}
+
+  @media(max-width:600px){
+    nav{padding:14px 16px}
+    .page-wrap{padding:40px 16px 80px}
+    h1{font-size:30px}
+    .contact-grid{grid-template-columns:1fr}
+    .two-col{grid-template-columns:1fr}
+    .form-section{padding:24px}
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="icon.png" alt="Kaku">
+    Kaku <span class="jp">かく</span>
+  </a>
+  <a href="index.html" class="back-link">← Back to home</a>
+</nav>
+
+<div class="page-wrap">
+  <p class="page-label">Help & Support</p>
+  <h1>How can we help?</h1>
+  <p class="hero-sub">We're a small team building Kaku with care. Reach out anytime — we read every message and reply within 24 hours.</p>
+
+  <!-- CONTACT CARDS -->
+  <div class="contact-grid">
+    <a href="mailto:support@kaku.app" class="contact-card">
+      <div class="cc-icon cc-purple">✉️</div>
+      <h3>Email support</h3>
+      <p>For waitlist issues, verification problems, or anything else.</p>
+      <span class="cc-link">support@kaku.app →</span>
+    </a>
+    <a href="mailto:privacy@kaku.app" class="contact-card">
+      <div class="cc-icon cc-pink">🔒</div>
+      <h3>Privacy requests</h3>
+      <p>Request data deletion, access, or correction of your personal data.</p>
+      <span class="cc-link">privacy@kaku.app →</span>
+    </a>
+    <div class="contact-card" style="cursor:default;">
+      <div class="cc-icon cc-green">⏱️</div>
+      <h3>Response time</h3>
+      <p>We typically reply within <strong style="color:var(--text)">24 hours</strong> on weekdays. Weekends may take a bit longer.</p>
+      <span style="font-size:13px;color:var(--green);">● Usually fast</span>
+    </div>
+    <div class="contact-card" style="cursor:default;">
+      <div class="cc-icon cc-blue">🌐</div>
+      <h3>Platform</h3>
+      <p>Kaku is coming to <strong style="color:var(--text)">Android</strong> first. iOS support is planned for a later date.</p>
+      <span style="font-size:13px;color:rgba(248,244,255,0.4);">Android · 2025</span>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-section">
+    <h2>Common questions</h2>
+    <p class="sub">Quick answers to things people ask us most.</p>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">I didn't receive my verification email. What do I do?<span class="faq-chevron">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">Check your spam or promotions folder first. If it's not there, go back to the waitlist page and click "Resend code" — a new 6-digit code will be sent. Codes expire in 10 minutes, so check quickly. If you still have issues, email us at <a href="mailto:support@kaku.app">support@kaku.app</a>.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">I want to remove my email from the waitlist.<span class="faq-chevron">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">Email us at <a href="mailto:privacy@kaku.app">privacy@kaku.app</a> with your email address and we'll delete it from our database within 24 hours. You can also unsubscribe from any email we send you using the unsubscribe link at the bottom of the email.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">When is Kaku launching?<span class="faq-chevron">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">We're targeting an Android launch in 2025. We'll email everyone on the waitlist as soon as it goes live — you'll be the first to know, ahead of the public announcement.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Will Kaku be free?<span class="faq-chevron">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">Yes, Kaku will be free to download and use. Waitlist members get early access and any launch perks we announce closer to the release date.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">My verification code says it's expired or invalid.<span class="faq-chevron">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">Codes expire after 10 minutes for security. Go back to the email input step, enter your email again, and request a fresh code. Make sure to enter it quickly. If the problem persists, contact us at <a href="mailto:support@kaku.app">support@kaku.app</a>.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Is Kaku coming to iOS?<span class="faq-chevron">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">Android is our first priority. iOS support is planned for a later date. If you're on iOS, joining the waitlist still makes sense — we'll announce the iOS version to the same list.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT FORM -->
+  <div class="form-section">
+    <h2>Send us a message</h2>
+    <p class="sub">Can't find what you're looking for? We'll get back to you within 24 hours.</p>
+
+    <div id="contact-form">
+      <div class="two-col">
+        <div>
+          <label class="field-label" for="cf-name">Your name</label>
+          <input class="field-input" type="text" id="cf-name" placeholder="Abdul Rahman">
+        </div>
+        <div>
+          <label class="field-label" for="cf-email">Email address</label>
+          <input class="field-input" type="email" id="cf-email" placeholder="you@email.com">
+        </div>
+      </div>
+      <label class="field-label" for="cf-topic">Topic</label>
+      <select class="field-input" id="cf-topic">
+        <option value="">Select a topic…</option>
+        <option>Verification email not received</option>
+        <option>Remove me from waitlist</option>
+        <option>Bug or technical issue</option>
+        <option>Question about the app</option>
+        <option>Privacy / data request</option>
+        <option>Other</option>
+      </select>
+      <label class="field-label" for="cf-msg">Message</label>
+      <textarea class="field-input" id="cf-msg" placeholder="Describe your issue or question in as much detail as you can…"></textarea>
+      <button class="submit-btn" id="cf-btn" onclick="submitForm()">Send message</button>
+    </div>
+
+    <div class="form-success" id="form-success">
+      <div class="success-icon">📬</div>
+      <h3>Message sent!</h3>
+      <p>Thanks for reaching out. We'll reply to your email within 24 hours.</p>
+    </div>
+  </div>
+</div>
+
+<footer-bar>
+  <a href="index.html">Home</a>
+  <a href="privacy.html">Privacy Policy</a>
+  <a href="terms.html">Terms of Service</a>
+  <a href="support.html">Support</a>
+  <br><br>© 2025 Kaku. All rights reserved.
+</footer-bar>
+
+<script>
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+async function submitForm() {
+  const name  = document.getElementById('cf-name').value.trim();
+  const email = document.getElementById('cf-email').value.trim();
+  const topic = document.getElementById('cf-topic').value;
+  const msg   = document.getElementById('cf-msg').value.trim();
+  const btn   = document.getElementById('cf-btn');
+
+  if (!name || !email || !topic || !msg) {
+    alert('Please fill in all fields before sending.');
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert('Please enter a valid email address.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  // Opens mailto as fallback (works without a backend)
+  // Replace with a real form endpoint (e.g. Formspree, Netlify Forms) for production
+  const mailtoBody = `Name: ${name}%0AEmail: ${email}%0ATopic: ${topic}%0A%0AMessage:%0A${encodeURIComponent(msg)}`;
+  window.location.href = `mailto:support@kaku.app?subject=Support: ${encodeURIComponent(topic)}&body=${mailtoBody}`;
+
+  // Show success after short delay
+  setTimeout(() => {
+    document.getElementById('contact-form').style.display = 'none';
+    document.getElementById('form-success').style.display = 'block';
+  }, 800);
+}
+</script>
+</body>
+</html>

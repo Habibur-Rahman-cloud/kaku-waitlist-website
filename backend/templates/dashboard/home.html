@@ -1,0 +1,144 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+<!-- STATS -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="bg-brand-card border border-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:border-brand-purple/30 transition-colors">
+        <div class="absolute inset-0 bg-gradient-to-br from-brand-purple/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+        <div class="text-xs text-gray-500 uppercase tracking-widest mb-3">Total subscribers</div>
+        <div class="text-4xl font-bold bg-gradient-to-br from-brand-purple-light to-brand-pink text-transparent bg-clip-text leading-none">{{ total_users }}</div>
+        <div class="text-xs text-gray-500 mt-2">Verified emails</div>
+    </div>
+    <div class="bg-brand-card border border-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:border-brand-purple/30 transition-colors">
+        <div class="absolute inset-0 bg-gradient-to-br from-brand-purple/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+        <div class="text-xs text-gray-500 uppercase tracking-widest mb-3">Today</div>
+        <div class="text-4xl font-bold bg-gradient-to-br from-brand-purple-light to-brand-pink text-transparent bg-clip-text leading-none">{{ today_joins }}</div>
+        <div class="text-xs text-gray-500 mt-2">New signups</div>
+    </div>
+    <div class="bg-brand-card border border-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:border-brand-purple/30 transition-colors">
+        <div class="absolute inset-0 bg-gradient-to-br from-brand-purple/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+        <div class="text-xs text-gray-500 uppercase tracking-widest mb-3">This week</div>
+        <div class="text-4xl font-bold bg-gradient-to-br from-brand-purple-light to-brand-pink text-transparent bg-clip-text leading-none">{{ weekly_joins }}</div>
+        <div class="text-xs text-gray-500 mt-2">New signups</div>
+    </div>
+    <div class="bg-brand-card border border-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:border-brand-purple/30 transition-colors">
+        <div class="absolute inset-0 bg-gradient-to-br from-brand-purple/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+        <div class="text-xs text-gray-500 uppercase tracking-widest mb-3">Last signup</div>
+        <div class="text-lg font-bold bg-gradient-to-br from-brand-purple-light to-brand-pink text-transparent bg-clip-text leading-tight mt-1 truncate">
+            {% if last_signup %}{{ last_signup.email }}{% else %}—{% endif %}
+        </div>
+        <div class="text-xs text-gray-500 mt-2">{% if last_signup %}{{ last_signup.joined_at|timesince }} ago{% endif %}</div>
+    </div>
+</div>
+
+<!-- BROADCAST EMAIL -->
+<div class="bg-brand-card border border-gray-800 rounded-2xl p-8 mb-8">
+    <h2 class="text-lg font-semibold mb-2 flex items-center gap-2">📨 Broadcast Email</h2>
+    <p class="text-sm text-gray-400 mb-6 leading-relaxed max-w-3xl">Send one email to your entire waitlist. All subscribers will receive it. Use for launch announcements, updates, or sneak peeks.</p>
+
+    <form method="post" action="{% url 'dashboard_broadcast' %}">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-400 mb-2">Recipient</label>
+            <select name="recipient" class="w-full bg-white/5 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-purple/50 transition-colors">
+                <option value="all" class="bg-brand-card">All Subscribers ({{ total_users }})</option>
+                {% for entry in entries %}
+                <option value="{{ entry.email }}" class="bg-brand-card">{{ entry.email }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-400 mb-2">Subject line</label>
+            <input type="text" name="subject" placeholder="e.g. Kaku is launching next week 🎌" required class="w-full bg-white/5 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-brand-purple/50 transition-colors">
+        </div>
+
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-400 mb-2">Message body (HTML supported)</label>
+            <textarea name="body" placeholder="Write your message here...&#10;&#10;You can use <b>bold</b>, <a href='...'>links</a> and basic HTML." rows="5" required class="w-full bg-white/5 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-brand-purple/50 transition-colors resize-y"></textarea>
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+            <button type="submit" class="bg-gradient-to-br from-brand-purple to-[#9333ea] text-white font-semibold rounded-xl px-6 py-3 hover:-translate-y-0.5 hover:shadow-[0_6px_24px_rgba(124,58,237,0.35)] transition-all flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                Send Email
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- SUBSCRIBER TABLE -->
+<div class="bg-brand-card border border-gray-800 rounded-2xl overflow-hidden mb-8">
+    <div class="p-6 border-b border-gray-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <h2 class="text-lg font-semibold">Subscribers</h2>
+        
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+            <form method="get" class="flex-1 sm:w-64">
+                <input type="text" name="q" value="{{ query }}" placeholder="Search email…" class="w-full bg-white/5 border border-gray-800 rounded-xl px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-purple/50 transition-colors">
+            </form>
+            <a href="{% url 'dashboard_export_csv' %}" class="bg-white/5 border border-gray-800 rounded-xl px-4 py-2 text-sm text-gray-400 hover:text-white hover:border-gray-600 transition-colors whitespace-nowrap">
+                Export CSV
+            </a>
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="border-b border-gray-800">
+                    <th class="py-3 px-6 text-xs font-semibold uppercase tracking-widest text-gray-500">ID</th>
+                    <th class="py-3 px-6 text-xs font-semibold uppercase tracking-widest text-gray-500">Email</th>
+                    <th class="py-3 px-6 text-xs font-semibold uppercase tracking-widest text-gray-500">Source</th>
+                    <th class="py-3 px-6 text-xs font-semibold uppercase tracking-widest text-gray-500">Joined At</th>
+                    <th class="py-3 px-6 text-xs font-semibold uppercase tracking-widest text-gray-500">Status</th>
+                    <th class="py-3 px-6 text-xs font-semibold uppercase tracking-widest text-gray-500 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800/50">
+                {% for entry in entries %}
+                <tr class="hover:bg-white/[0.02] transition-colors">
+                    <td class="py-4 px-6 text-sm">{{ entry.id }}</td>
+                    <td class="py-4 px-6">
+                        <div class="text-sm font-medium text-white">{{ entry.email }}</div>
+                        <div class="text-xs text-gray-500 mt-1" title="{{ entry.user_agent }}">
+                            {% if entry.ip_address %}{{ entry.ip_address }}{% else %}—{% endif %}
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 text-sm text-gray-400">{% if entry.source %}{{ entry.source }}{% else %}—{% endif %}</td>
+                    <td class="py-4 px-6 text-sm text-gray-400">{{ entry.joined_at|date:"M d, Y H:i" }}</td>
+                    <td class="py-4 px-6">
+                        {% if entry.verified %}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-500/10 text-green-400 border border-green-500/20">Verified</span>
+                        {% else %}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-500/10 text-gray-400 border border-gray-500/20">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-4 px-6 text-right">
+                        <form action="{% url 'dashboard_delete_user' entry.id %}" method="post" class="inline" onsubmit="return confirm('Are you sure you want to delete {{ entry.email }}?');">
+                            {% csrf_token %}
+                            <button type="submit" class="text-xs text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 rounded-lg border border-red-500/20 transition-colors">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="py-12 text-center text-gray-500">
+                        {% if query %}No subscribers found matching "{{ query }}"{% else %}No subscribers yet.{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if total_pages > 1 %}
+    <div class="p-6 border-t border-gray-800 flex items-center justify-between">
+        <span class="text-sm text-gray-500">Page {{ page }} of {{ total_pages }}</span>
+        <div class="flex gap-2">
+            <a href="?page={{ page|add:"-1" }}{% if query %}&q={{ query }}{% endif %}" class="{% if not has_prev %}opacity-50 pointer-events-none{% endif %} bg-white/5 border border-gray-800 rounded-lg px-4 py-2 text-sm text-gray-400 hover:text-white hover:border-gray-600 transition-colors">← Prev</a>
+            <a href="?page={{ page|add:"1" }}{% if query %}&q={{ query }}{% endif %}" class="{% if not has_next %}opacity-50 pointer-events-none{% endif %} bg-white/5 border border-gray-800 rounded-lg px-4 py-2 text-sm text-gray-400 hover:text-white hover:border-gray-600 transition-colors">Next →</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

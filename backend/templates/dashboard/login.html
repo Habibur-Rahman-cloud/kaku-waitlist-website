@@ -1,0 +1,32 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Sign In - Admin{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-md bg-brand-card p-10 rounded-3xl border border-gray-800 text-center shadow-2xl shadow-brand-purple/5">
+    <div class="font-jp text-4xl text-brand-purple-light mb-2">かく</div>
+    <h1 class="text-2xl font-bold mb-1">Admin Dashboard</h1>
+    <p class="text-sm text-gray-400 mb-8">Waitlist management for Kaku</p>
+
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="text-red-400 text-sm bg-red-500/10 p-3 rounded-xl border border-red-500/20">
+                {{ form.non_field_errors.0 }}
+            </div>
+        {% endif %}
+
+        <div>
+            <input type="text" name="username" placeholder="Username" class="w-full bg-white/5 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-brand-purple/50 focus:bg-brand-purple/5 transition-all" required autofocus>
+        </div>
+        <div>
+            <input type="password" name="password" placeholder="Password" class="w-full bg-white/5 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-brand-purple/50 focus:bg-brand-purple/5 transition-all" required>
+        </div>
+        
+        <button type="submit" class="w-full bg-gradient-to-br from-brand-purple to-[#9333ea] text-white font-semibold rounded-xl px-4 py-3 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(124,58,237,0.35)] transition-all">
+            Sign in
+        </button>
+    </form>
+</div>
+{% endblock %}
